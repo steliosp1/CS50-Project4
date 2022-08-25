@@ -1,0 +1,69 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<br>
+<br>
+<div class="container">
+<h3 class="text-center">Following profile posts for user {{request.user.username}}</h3>
+<br><br>
+{% for post in page_obj %}
+<div class="card my-2">
+  <div class="card-body my-card">
+    <div class="d-flex mb-2">
+      <div class="d-flex justify-content-start">
+        <a href="{% url 'userProfile' post.user.id %}"
+          ><span class="text-secondary">{{post.user.user.username}}</span></a
+        >
+      </div>
+      <div class="w-100 d-flex justify-content-end">
+        <span class="mx-2 text-secondary">{{post.timestamp}}</span
+        >{%if request.user == post.user.user%}<span class="text-primary edit" data-id="{{post.id}}" id="edit-btn-{{post.id}}">Edit</span>{%endif%}
+      </div>
+    </div>
+    <span id="post-content-{{post.id}}" class="post">{{post.post}}</span>
+    <textarea data-id="{{post.id}}" id="post-edit-{{post.id}}" style="display:none;" class="form-control textarea" row="3">{{post.post}}</textarea>
+
+    <div class="like mt-3">
+
+
+      <img
+      data-id="{{post.id}}"
+      id="post-like-{{post.id}}"
+        class="liked"
+        {% if not request.user in post.like.all %}
+        data-is_liked="no"
+        src="https://img.icons8.com/carbon-copy/100/000000/like--v2.png"
+{%else%}
+data-is_liked="yes"
+        src="https://img.icons8.com/plasticine/100/000000/like.png"
+        {%endif%}
+      />
+
+      <span id="post-count-{{post.id}}">{{post.like.count}}</span>
+    </div>
+  </div>
+</div>
+{%endfor%}
+</div>
+
+<div class="pagination">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+  </span>
+</div>
+
+<br><br>
+
+{% endblock %}
